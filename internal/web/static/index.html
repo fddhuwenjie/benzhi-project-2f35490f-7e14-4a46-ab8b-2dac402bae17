@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>避难场所演练核验台</title>
+  <link rel="stylesheet" href="/assets/app.css">
+  <link rel="stylesheet" href="/assets/features.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">SG</span><div><strong>避难场所演练核验台</strong><small>社区应急管理</small></div></div>
+    <div class="header-actions"><label for="drill-select">当前演练</label><select id="drill-select"><option value="">新建演练</option></select><button id="refresh-btn" class="icon-btn" title="刷新" aria-label="刷新">↻</button></div>
+  </header>
+  <main>
+    <section class="status-band">
+      <div><span class="eyebrow">演练进度</span><h1 id="site-title">新建演练档案</h1><p id="site-meta">登记基本资料后开始布设核验</p><button id="edit-drill-btn" class="compact" hidden>编辑草稿资料</button></div>
+      <ol id="status-steps" class="steps"></ol>
+    </section>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <section id="progress-panel" class="workspace-section" hidden>
+      <div class="section-heading"><div><span class="section-number">概览</span><h2>检查进度与风险</h2></div><p id="next-action"></p></div>
+      <div id="progress-stats" class="stats-grid"></div><div id="rule-summary" class="rule-summary"></div>
+    </section>
+    <section id="create-panel" class="workspace-section">
+      <div class="section-heading"><div><span class="section-number">01</span><h2>演练建档</h2></div><p>场所容量、负责人和日期构成档案主信息。</p></div>
+      <form id="create-form" class="form-grid">
+        <label>场所名称<input name="site_name" required placeholder="例如：长宁社区文化中心"></label>
+        <label>计划容量<input name="planned_capacity" required type="number" min="1" max="100000" value="300"></label>
+        <label>演练负责人<input name="lead_name" required placeholder="负责人姓名"></label>
+        <label>演练日期<input name="scheduled_date" required type="date"></label>
+        <div class="form-action"><button type="submit" class="primary">创建草稿</button></div>
+      </form>
+    </section>
+    <section id="baseline-panel" class="workspace-section" hidden>
+      <div class="section-heading"><div><span class="section-number">02</span><h2>布设基线</h2></div><p id="baseline-summary">冻结后形成版本化依据，不可修改。</p></div>
+      <form id="baseline-form" class="baseline-grid">
+        <label>疏散入口<textarea name="entrances" placeholder="每行一项，例如：东侧主入口"></textarea></label>
+        <label>疏散路径<textarea name="evacuation_routes" placeholder="每行一项，例如：东门至登记区通道"></textarea></label>
+        <label>功能分区<textarea name="functional_zones" placeholder="每行一项，例如：登记区"></textarea></label>
+        <label>关键设施<textarea name="critical_facilities" placeholder="每行一项，例如：应急照明箱"></textarea></label>
+        <div class="form-action"><button id="baseline-preview-btn" type="button">预览检查点</button><button type="submit" class="primary">确认冻结</button></div>
+      </form>
+      <div id="baseline-preview" class="preview-panel" hidden></div>
+      <div id="baseline-readonly" class="readonly-grid" hidden></div>
+    </section>
+    <section id="checks-panel" class="workspace-section" hidden>
+      <div class="section-heading"><div><span class="section-number">03</span><h2>现场检查</h2></div><p>按顺序记录，证据缺失、超时或失败会自动生成偏差。</p></div>
+      <div class="table-wrap"><table><thead><tr><th>序号</th><th>检查点</th><th>规则</th><th>最近结果</th><th>操作</th></tr></thead><tbody id="checkpoint-body"></tbody></table></div>
+    </section>
+    <section id="deviation-panel" class="workspace-section" hidden>
+      <div class="section-heading"><div><span class="section-number">04</span><h2>偏差整改</h2></div><p>补齐原因、措施和证据后，仅复验受影响检查点。</p></div>
+      <div id="deviation-list" class="deviation-list"></div>
+    </section>
+    <section id="review-panel" class="workspace-section" hidden>
+      <div class="section-heading"><div><span class="section-number">05</span><h2>独立复核</h2></div><p>复核员必须与演练负责人不同。</p></div>
+      <div id="returned-items" hidden></div>
+      <div id="submit-review-box"><button id="submit-review-btn" class="primary">提交独立复核</button></div>
+      <form id="review-form" class="review-form" hidden>
+        <label>复核员<input name="reviewer_name" required></label>
+        <label>复核意见<textarea name="review_note" placeholder="批准说明或退回原因"></textarea></label>
+        <fieldset id="review-items"><legend>退回事项</legend><div id="review-item-list"></div><button id="add-review-item" type="button">添加事项</button></fieldset>
+        <div class="decision-actions"><button name="decision" value="rejected" type="submit" class="danger">退回</button><button name="decision" value="approved" type="submit" class="primary">批准启用</button></div>
+      </form>
+    </section>
+    <section id="decision-panel" class="workspace-section decision-sheet" hidden>
+      <div class="decision-heading"><span>避难场所启用决定书</span><strong id="decision-seal">批准启用</strong></div>
+      <dl id="decision-content"></dl><div id="decision-verify" class="verify-line"></div><div class="decision-actions"><button id="verify-decision-btn">重新核验</button><a id="export-decision-link" class="button primary">下载归档副本</a><button id="print-decision-btn">打印</button></div>
+    </section>
+    <section id="timeline-panel" class="workspace-section" hidden>
+      <div class="section-heading"><div><span class="section-number">记录</span><h2>状态时间线</h2></div><p id="timeline-valid"></p></div>
+      <ol id="timeline-list" class="timeline"></ol>
+    </section>
+  </main>
+  <dialog id="check-dialog"><form id="check-form" method="dialog"><div class="dialog-heading"><h2 id="check-title">记录检查</h2><button value="cancel" class="icon-btn" aria-label="关闭">×</button></div><input type="hidden" name="checkpoint_code"><input type="hidden" name="deviation_id"><label>参与人数<input name="participant_count" type="number" min="1" value="20" required></label><div class="two-col"><label>开始时间<input name="started_at" type="datetime-local" required></label><label>结束时间<input name="ended_at" type="datetime-local" required></label></div><label>现场结论<select name="outcome"><option value="pass">通过</option><option value="fail">不通过</option></select></label><label>证据摘要<input name="evidence_digest" placeholder="照片编号、文件摘要或记录编号"></label><label>记录人<input name="recorded_by" required></label><div class="dialog-actions"><button value="cancel">取消</button><button id="check-submit" value="submit" class="primary">提交记录</button></div></form></dialog>
+  <dialog id="remediation-dialog"><form id="remediation-form" method="dialog"><div class="dialog-heading"><h2>提交整改材料</h2><button value="cancel" class="icon-btn" aria-label="关闭">×</button></div><input type="hidden" name="deviation_id"><label>偏差原因<textarea name="cause" required></textarea></label><label>纠正措施<textarea name="corrective_action" required></textarea></label><label>纠正证据摘要<input name="evidence_digest" required></label><div class="dialog-actions"><button value="cancel">取消</button><button value="submit" class="primary">保存整改</button></div></form></dialog>
+  <dialog id="edit-dialog"><form id="edit-form" method="dialog"><div class="dialog-heading"><h2>修订草稿资料</h2><button value="cancel" class="icon-btn" aria-label="关闭">×</button></div><label>场所名称<input name="site_name" required></label><label>计划容量<input name="planned_capacity" type="number" min="1" max="100000" required></label><label>演练负责人<input name="lead_name" required></label><label>演练日期<input name="scheduled_date" type="date" required></label><div class="dialog-actions"><button value="cancel">取消</button><button value="submit" class="primary">保存修订</button></div></form></dialog>
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>
